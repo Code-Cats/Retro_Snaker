@@ -25,7 +25,7 @@ typedef struct
 
 int N=20;	//棋盘大小
 int SPEED=150;	//运动周期
-int LENGTH_MAX=40;	//定义最大蛇身长度
+int LENGTH_MAX=50;	//定义最大蛇身长度
 int LENGTH_TARGET=40;	//定义长度目标值
 
 RankingListTypeDef Ranking_List={0};
@@ -40,7 +40,8 @@ void gotoxy(int x,int y)	//定义gotoxy函数
 }
 
 
-void Ranking(int *a,int len);	//排序函数
+void Ranking_Ascend(int *a,int len);
+void Ranking_Descend(int *a,int len);
 
 int Gameing_Patience(void);	//耐心模式
 int Gameing_Speed(void);	//速度挑战
@@ -110,7 +111,7 @@ int main()
 			}
 		case 7:
 			{
-				Rank_Patience_Clear();
+				Rank_Speed_Clear();
 				break;
 			}
 		case 8:
@@ -148,7 +149,7 @@ int main()
 void Seting(void)
 {
 	system("cls");
-	printf("设置棋盘大小（单位为半角,建议不超过28，全屏随意）：\n");
+	printf("设置棋盘大小（单位为全角,建议不超过28，全屏随意）：\n速度模式下棋盘会限制在30以内\n");
 	scanf("%d",&N);
 }
 
@@ -161,12 +162,13 @@ void Ranking_Patience(void)
 	{
 		out_temp[i]=Ranking_List.length[i];
 	}
-	Ranking(out_temp,10);
+	Ranking_Ascend(out_temp,10);
 	printf("\n------------耐心排行榜-------------");
-	for(int i=0;i<10;i++)
+	for(int i=0;i<9;i++)
 	{
-		printf("\n%d.%d",i+1,out_temp[i]);
+		printf("\n%d.................................%d",i+1,out_temp[i]);
 	}
+	printf("\n%d.................................%d",9,out_temp[9]);
 	printf("\n按任意键返回");
 	getch();
 }
@@ -180,13 +182,14 @@ void Ranking_Speed(void)
 	{
 		out_temp[i]=Ranking_List.speed[i];
 	}
-	Ranking(out_temp,10);
-	printf("\n------------速度排行榜-------------");
-	for(int i=0;i<10;i++)
+	Ranking_Descend(out_temp,10);	//降序排反应速度
+	printf("\n------------反应时间排行榜-------------");
+	for(int i=0;i<9;i++)
 	{
-		printf("\n%d.%d",i+1,out_temp[i]);
+		printf("\n%d.................................%d",i+1,out_temp[i]);
 	}
-	printf("\n\t按任意键返回");
+	printf("\n%d.................................%d",9,out_temp[9]);
+	printf("\n按任意键返回");
 	getch();
 }
 
@@ -198,7 +201,7 @@ void Rank_Patience_Clear(void)
 	{
 		Ranking_List.length[i]=0;
 	}
-	printf("-----已清除耐心排行榜-----\n\t按任意键返回");
+	printf("-----已清除耐心排行榜-----\n按任意键返回");
 	getch();
 }
 
@@ -209,7 +212,7 @@ void Rank_Speed_Clear(void)
 	{
 		Ranking_List.speed[i]=0;
 	}
-	printf("-----已清除手速排行榜-----\n\t按任意键返回");
+	printf("-----已清除手速排行榜-----\n按任意键返回");
 	getch();
 }
 
@@ -230,7 +233,7 @@ void Visit_Github(void)
 {
 	system("cls");
 	system("explorer https://github.com/yx19981001/Retro_Snaker");
-	printf("已使用默认IE浏览器打开\n如电脑无IE浏览器，请手动访问：\nhttps://github.com/yx19981001/Retro_Snaker");
+	printf("已使用默认浏览器打开\n如电脑无法自动打开浏览器，请手动访问：\nhttps://github.com/yx19981001/Retro_Snaker");
 	getch();
 }
 
@@ -239,10 +242,6 @@ int Gameing_Patience(void)
 {
 	SPEED=150;
 	///////////////////////////////////////////////////////
-	int testlength=0;	//前缀为test是用来测试debug用的测试变量
-	int testfood[2]={0,0};	//前缀为test是用来测试用的测试变量
-	int testtime=0;	//前缀为test是用来测试用的测试变量
-	int testR[2]={0,0};	//前缀为test是用来测试用的测试变量
 
 
 	srand(time(0));
@@ -263,13 +262,12 @@ int Gameing_Patience(void)
 		R[i]=R_Init[i];
 		L[i]=L_Init[i];
 	}
-//	int R[LENGTH_MAX]={2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0};	//定义行坐标储存数组变量
-//	int L[LENGTH_MAX]={7,6,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0};	//定义列坐标储存数组变量
+
 
 	int food[2];	//定义食物坐标
 	food[0]=rand()%(N-2)+1;	//初始化随机行坐标
 	food[1]=rand()%(N-2)+1;	//初始化随机列坐标
-	char board[40][40];	//定义棋盘二维数组
+	char board[100][100];	//定义棋盘二维数组
 
 	for(i=0;i<N;i++)	//定义上下边界
 	{
@@ -286,9 +284,9 @@ int Gameing_Patience(void)
 	system("cls");
 	printf("\n");
 	printf("\n");
-	printf("    ----------贪吃蛇Dome2.1---------\n");
+	printf("----------贪吃蛇Dome2.1---------\n");
 	printf("                            --余鑫\n");
-	printf("小提示：\nW控制上 S控制下 A控制左 D控制右\n");
+	printf("小提示：\nW控制上 S控制下 A控制左 D控制右\n目标：吃到更多的食物\n");
 	printf("\n     按下任意键开始游戏");
 	getch();
 
@@ -297,11 +295,12 @@ int Gameing_Patience(void)
 		while(1)
 	{
 
-testlength=length;
+
 
 		if(R[0]==0||R[0]==(N-1)||L[0]==0||L[0]==(N-1))	//判断是否触碰到边界
 		{
-			printf("\n  吃到墙啦\n           最终长度：%d\n即将退出本局\n",length);
+			gotoxy(5,10);	//移动光标到指定位置（中间）
+			printf("\n           吃到墙啦\n           最终长度：%d\n           即将退出本局\n",length);
 			goto a;
 		}
 
@@ -321,7 +320,7 @@ testlength=length;
 
 
 
-		gotoxy(1,1);	//定位(清屏)函数
+		gotoxy(1,1);	
 		for(ri=0;ri<N;ri++)	//数组内容最终输出
 		{
 			printf("\n");
@@ -330,11 +329,11 @@ testlength=length;
 		}
 
 
-		Sleep(SPEED);	//暂停x秒
-		c=0;	//重新赋值c
+		Sleep(SPEED);	
+		c=0;	
 		if(_kbhit()!=0)	//当没有输入时跳过getch语句以让程序流畅进行
 		{
-			c=getch();	//当有输入时读取键值并保存
+			c=getch();
 		}
 
 		while(_kbhit()!=0)	//手动读取清除键盘缓冲区内容
@@ -361,26 +360,23 @@ testlength=length;
 			v[1]=0;
 		break;
 		}
-testR[0]=R[0];
-testR[1]=L[0];
-testfood[0]=food[0];
-testfood[1]=food[1];
+
 
 		if((R[0]==food[0])&&(L[0]==food[1]))	//判断是否吃到食物
 		{
-			length++;	//蛇身长度加一
-			srand(time(0));	//使用时间来初始化随机数种子
-			food[0]=rand()%(N-2)+1;	//重新分配随机行坐标
-			food[1]=rand()%(N-2)+1;	//重新分配随机列坐标
+			length++;	
+			srand(time(0));	
+			food[0]=rand()%(N-2)+1;	
+			food[1]=rand()%(N-2)+1;	
 		}
 
-testtime=time(0);
+
 
 		if(length==LENGTH_MAX)
 		{
 			gotoxy(5,10);	//移动光标到指定位置（中间）
 			printf("给你的耐心一个赞，游戏已通关\n--后续更多版本敬请期待\n");
-			goto a;	//吃到最大长度游戏结束，跳转到结束位置
+			goto a;	
 		}
 
 		for(i=length;i>=2;i--)	//蛇身前进
@@ -396,15 +392,11 @@ testtime=time(0);
 		{
 			if((R[0]==R[i])&&(L[0]==L[i]))	//检查蛇头是否与蛇身重合
 			{
-				gotoxy(5,10);	//移动光标到指定位置（中间）
+				gotoxy(5,10);	
 				printf("你吃到自己了-_-|，游戏结束 - 最终长度是%d\n",length);
-				goto a;	//吃到自己游戏结束，跳转到结束位置
+				goto a;
 			}
 		}
-
-/*printf("调试结果：蛇身长：%d	食物随机的行列坐标：%d,%d	时间数函数%d\n蛇头的坐标是：%d,%d\n按任意键继续",testlength,testfood[0],testfood[1],testtime,testR[0],testR[1]);
-system("pause");
-*/
 
 	}
 
@@ -427,10 +419,8 @@ int Gameing_Speed(void)	//速度挑战
 	SPEED=150;
 	///////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////
-	int testlength=0;	//前缀为test是用来测试debug用的测试变量
-	int testfood[2]={0,0};	//前缀为test是用来测试用的测试变量
-	int testtime=0;	//前缀为test是用来测试用的测试变量
-	int testR[2]={0,0};	//前缀为test是用来测试用的测试变量
+	int N_temp=N;	//储存记录外部设置棋盘大小
+	N=N>30?30:N;;	//限制大小30以内
 
 
 	srand(time(0));
@@ -451,13 +441,12 @@ int Gameing_Speed(void)	//速度挑战
 		R[i]=R_Init[i];
 		L[i]=L_Init[i];
 	}
-//	int R[LENGTH_MAX]={2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0};	//定义行坐标储存数组变量
-//	int L[LENGTH_MAX]={7,6,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0};	//定义列坐标储存数组变量
+
 
 	int food[2];	//定义食物坐标
 	food[0]=rand()%(N-2)+1;	//初始化随机行坐标
 	food[1]=rand()%(N-2)+1;	//初始化随机列坐标
-	char board[40][40];	//定义棋盘二维数组
+	char board[100][100];	//定义棋盘二维数组
 
 	for(i=0;i<N;i++)	//定义上下边界
 	{
@@ -474,9 +463,9 @@ int Gameing_Speed(void)	//速度挑战
 	system("cls");
 	printf("\n");
 	printf("\n");
-	printf("    ----------贪吃蛇Dome2.1---------\n");
+	printf("----------贪吃蛇Dome2.1---------\n");
 	printf("                            --余鑫\n");
-	printf("小提示：\nW控制上 S控制下 A控制左 D控制右\n");
+	printf("小提示：\nW控制上 S控制下 A控制左 D控制右\n目标：在越来越快的游戏速度下吃到食物\n");
 	printf("\n     按下任意键开始游戏");
 	getch();
 
@@ -485,11 +474,10 @@ int Gameing_Speed(void)	//速度挑战
 		while(1)
 	{
 
-testlength=length;
-
 		if(R[0]==0||R[0]==(N-1)||L[0]==0||L[0]==(N-1))	//判断是否触碰到边界
 		{
-			printf("\n  吃到墙啦\n           最终长度：%d\n即将退出本局\n",length);
+			gotoxy(5,10);	//移动光标到指定位置（中间）
+			printf("\n          吃到墙啦\n          最终反应时间：%d\n          即将退出本局\n",SPEED);
 			goto a;
 		}
 
@@ -517,12 +505,12 @@ testlength=length;
 				printf("%c ",board[ri][li]);
 		}
 
-
-		Sleep(SPEED);	//暂停x秒
-		c=0;	//重新赋值c
+		if(SPEED!=0)
+		Sleep(SPEED);	
+		c=0;	
 		if(_kbhit()!=0)	//当没有输入时跳过getch语句以让程序流畅进行
 		{
-			c=getch();	//当有输入时读取键值并保存
+			c=getch();	
 		}
 
 		while(_kbhit()!=0)	//手动读取清除键盘缓冲区内容
@@ -549,27 +537,27 @@ testlength=length;
 			v[1]=0;
 		break;
 		}
-testR[0]=R[0];
-testR[1]=L[0];
-testfood[0]=food[0];
-testfood[1]=food[1];
+
 
 		if((R[0]==food[0])&&(L[0]==food[1]))	//判断是否吃到食物
 		{
-			SPEED-=10;
-			length++;	//蛇身长度加一
-			srand(time(0));	//使用时间来初始化随机数种子
-			food[0]=rand()%(N-2)+1;	//重新分配随机行坐标
-			food[1]=rand()%(N-2)+1;	//重新分配随机列坐标
+			SPEED=SPEED>10?(SPEED-10):SPEED;	//对速度的条件赋值
+			SPEED=(SPEED<=10&&SPEED>3)?4:SPEED;	//对速度的条件赋值
+			SPEED=SPEED==4?1:SPEED;	//对速度的条件赋值
+			SPEED=SPEED==1?0:SPEED;
+			length++;	
+			srand(time(0));	
+			food[0]=rand()%(N-2)+1;	
+			food[1]=rand()%(N-2)+1;	
 		}
 
-testtime=time(0);
+
 
 		if(length==LENGTH_MAX)
 		{
 			gotoxy(5,10);	//移动光标到指定位置（中间）
 			printf("   给你的耐心一个赞，游戏已通关\n   --后续更多版本敬请期待\n");
-			goto a;	//吃到最大长度游戏结束，跳转到结束位置
+			goto a;	
 		}
 
 		for(i=length;i>=2;i--)	//蛇身前进
@@ -585,15 +573,11 @@ testtime=time(0);
 		{
 			if((R[0]==R[i])&&(L[0]==L[i]))	//检查蛇头是否与蛇身重合
 			{
-				gotoxy(5,10);	//移动光标到指定位置（中间）
-				printf("你吃到自己了-_-|，游戏结束 - 最终速度是%d\n",SPEED);
-				goto a;	//吃到自己游戏结束，跳转到结束位置
+				gotoxy(5,10);	
+				printf("你吃到自己了-_-|，游戏结束 - 最终反应时间是%d\n",SPEED);
+				goto a;	
 			}
 		}
-
-/*printf("调试结果：蛇身长：%d	食物随机的行列坐标：%d,%d	时间数函数%d\n蛇头的坐标是：%d,%d\n按任意键继续",testlength,testfood[0],testfood[1],testtime,testR[0],testR[1]);
-system("pause");
-*/
 
 	}
 
@@ -603,8 +587,8 @@ system("pause");
 
 	free(R);
 	free(L);
-
-	return SPEED;
+	N=N_temp;	//将储存的外部设置值还原
+	return SPEED==0?0:SPEED;
 	///////////////////////////////////////////////////////////
 
 }
@@ -612,7 +596,7 @@ system("pause");
 
 
 
-void Ranking(int *a,int len)	//排序函数
+void Ranking_Ascend(int *a,int len)	//升序函数
 {
 	for(int i=0;i<len-1;i++)
 	{
@@ -627,4 +611,34 @@ void Ranking(int *a,int len)	//排序函数
 		}
 	}
 }
+
+void Ranking_Descend(int *a,int len)	//降序函数
+{
+	for(int i=0;i<len-1;i++)
+	{
+		for(int j=0;j<len-i-1;j++)
+		{
+			if(*(a+j)!=0&&*(a+j+1)!=0)	//对速度排行榜0升序，非零降序的特殊处理
+			{
+				if(*(a+j)>*(a+j+1))
+				{
+					int b=*(a+j);
+					*(a+j)=*(a+j+1);
+					*(a+j+1)=b;
+				}
+			}
+			else
+			{
+				if(*(a+j)<*(a+j+1))
+				{
+					int b=*(a+j);
+					*(a+j)=*(a+j+1);
+					*(a+j+1)=b;
+				}
+			}
+		}
+	}
+}
+
+
 
